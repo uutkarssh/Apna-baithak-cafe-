@@ -1,7 +1,7 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AuthProvider } from '@/components/providers/auth-provider'
 import { getSupabaseBrowser } from '@/lib/supabase-client'
 
@@ -18,6 +18,55 @@ export function Providers({ children }: { children: React.ReactNode }) {
         },
       })
   )
+
+  useEffect(() => {
+    const handleReceiptClick = async (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      const anchor = target?.closest<HTMLAnchorElement>('a[href*="/api/orders/"][href$="/receipt"]')
+      if (!anchor) return
+
+      const url = new URL(anchor.href, window.location.origin)
+      if (url.searchParams.get('admin') === '1') return
+
+      event.preventDefault()
+
+      try {
+        const response = await authedFetch(`${url.pathname}${url.search}`)
+        if (!response.ok) {
+          let message = 'Failed to download receipt.'
+          try {
+            const data = await response.json()
+            if (typeof data?.error === 'string') message = data.error
+          } catch {
+            // Keep the generic download error when the response is not JSON.
+          }
+          window.alert(message)
+          return
+        }
+
+        const blob = await response.blob()
+        const objectUrl = URL.createObjectURL(blob)
+        const disposition = response.headers.get('Content-Disposition') || ''
+        const filenameMatch = disposition.match(/filename="([^"]+)"/i)
+        const filename = filenameMatch?.[1] || 'receipt.pdf'
+
+        const download = document.createElement('a')
+        download.href = objectUrl
+        download.download = filename
+        document.body.appendChild(download)
+        download.click()
+        download.remove()
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
+      } catch (error) {
+        console.error('Receipt download failed:', error)
+        window.alert('Failed to download receipt. Please try again.')
+      }
+    }
+
+    document.addEventListener('click', handleReceiptClick)
+    return () => document.removeEventListener('click', handleReceiptClick)
+  }, [])
+
   return (
     <QueryClientProvider client={client}>
       <AuthProvider>{children}</AuthProvider>
