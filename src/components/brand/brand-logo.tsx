@@ -77,8 +77,7 @@ export function BrandIcon({
       priority={priority}
       unoptimized
       className={className}
-      style={{ height: `${size}px`, width: `${size}px` }}
+      style={{ height: `${size}px`, width: `${size}px`, borderRadius: '8px' }}
     />
   )
 }
-
