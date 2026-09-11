@@ -66,7 +66,6 @@ export function HomeView() {
       {/* Categories — horizontal rail on mobile, responsive grid on >= sm */}
       <section className="px-4 sm:px-0">
         {catsLoading ? (
-          // Mobile: horizontal scroll; sm+: grid
           <>
             <div className="no-scrollbar flex gap-4 overflow-x-auto pb-1 sm:hidden">
               {Array.from({ length: 8 }).map((_, i) => <CategorySkeleton key={i} />)}
@@ -77,13 +76,11 @@ export function HomeView() {
           </>
         ) : (
           <>
-            {/* Mobile: horizontal scroll rail */}
             <div className="no-scrollbar flex gap-4 overflow-x-auto pb-1 sm:hidden">
               {categories.map((c, i) => (
                 <CategoryButton key={c.id} category={c} index={i} onClick={() => openCategory(c.slug)} />
               ))}
             </div>
-            {/* sm+: wrapping grid that fills the available width */}
             <div className="hidden grid-cols-4 gap-3 sm:grid md:grid-cols-6 lg:grid-cols-8">
               {categories.map((c, i) => (
                 <CategoryButton key={c.id} category={c} index={i} onClick={() => openCategory(c.slug)} />
@@ -144,7 +141,6 @@ export function HomeView() {
             See all →
           </button>
         </div>
-        {/* Mobile: horizontal scroll */}
         <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 sm:hidden">
           {itemsLoading
             ? Array.from({ length: 4 }).map((_, i) => (
@@ -156,7 +152,6 @@ export function HomeView() {
                 </div>
               ))}
         </div>
-        {/* sm+: responsive grid that shows 2 cols on sm, 3 on md, 4 on lg, 5 on xl, 6 on 2xl */}
         <div className="hidden grid-cols-2 gap-3 sm:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {itemsLoading
             ? Array.from({ length: 8 }).map((_, i) => <ItemCardSkeleton key={i} />)
@@ -190,7 +185,7 @@ export function HomeView() {
             </span>
             <div className="min-w-0 flex-1">
               {/* Brand wordmark image replaces the typed restaurant name heading */}
-              <BrandWordmark height={28} className="mb-1" />
+              <BrandWordmark height={32} className="mb-1" />
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                 {RESTAURANT.address}
               </p>
